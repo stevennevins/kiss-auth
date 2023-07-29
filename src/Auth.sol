@@ -31,7 +31,7 @@ contract Auth is Ownable {
     /**
      * @dev The mapping to store the authorization status of authorizees for specific function selectors.
      */
-    mapping(address caller => mapping(bytes4 selector => bool auth)) public isAuthorized;
+    mapping(address caller => mapping(bytes4 selector => bool auth)) private isAuthorized;
 
     /**
      * @dev Modifier to check if the caller is authorized for the function call.
@@ -42,11 +42,20 @@ contract Auth is Ownable {
     }
 
     /**
+     * @dev Gets the authorization state of an address to call a specific function.
+     * @param user The address to authorize.
+     * @param selector The function selector to authorize.
+     */
+    function getAuthoziation(address user, bytes4 selector) external view returns (bool) {
+        return isAuthorized[user][selector];
+    }
+    /**
      * @dev Authorizes an address to call a specific function.
      * @param user The address to authorize.
      * @param selector The function selector to authorize.
      */
-    function authorize(address user, bytes4 selector) public onlyOwner {
+
+    function _authorize(address user, bytes4 selector) internal onlyOwner {
         isAuthorized[user][selector] = true;
         emit Authorize(user, selector);
     }
@@ -56,7 +65,7 @@ contract Auth is Ownable {
      * @param user The address to deauthorize.
      * @param selector The function selector to deauthorize.
      */
-    function deauthorize(address user, bytes4 selector) public onlyOwner {
+    function _deauthorize(address user, bytes4 selector) internal onlyOwner {
         isAuthorized[user][selector] = false;
         emit DeAuthorize(user, selector);
     }
