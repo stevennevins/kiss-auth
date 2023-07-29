@@ -10,16 +10,16 @@ import "openzeppelin-contracts/contracts/access/Ownable.sol";
 contract Auth is Ownable {
     /**
      * @dev Emitted when an address is authorized to call a specific function.
-     * @param authorizee The address that is authorized.
+     * @param user The address that is authorized.
      * @param selector The function selector that is authorized.
      */
-    event Authorize(address indexed authorizee, bytes4 indexed selector);
+    event Authorize(address indexed user, bytes4 indexed selector);
     /**
      * @dev Emitted when an address is deauthorized from calling a specific function.
-     * @param authorizee The address that is deauthorized.
+     * @param user The address that is deauthorized.
      * @param selector The function selector that is deauthorized.
      */
-    event DeAuthorize(address indexed authorizee, bytes4 indexed selector);
+    event DeAuthorize(address indexed user, bytes4 indexed selector);
 
     /**
      * @dev Error message for unauthorized function call.
@@ -30,9 +30,8 @@ contract Auth is Ownable {
 
     /**
      * @dev The mapping to store the authorization status of authorizees for specific function selectors.
-     * authorizee => selector => authorized
      */
-    mapping(address authorizee => mapping(bytes4 selector => bool auth)) public isAuthorized;
+    mapping(address caller => mapping(bytes4 selector => bool auth)) public isAuthorized;
 
     /**
      * @dev Modifier to check if the caller is authorized for the function call.
@@ -45,20 +44,20 @@ contract Auth is Ownable {
     /**
      * @dev Authorizes an address to call a specific function.
      * @param user The address to authorize.
-     * @param signature The function signature to authorize.
+     * @param selector The function selector to authorize.
      */
-    function authorize(address user, bytes4 signature) public onlyOwner {
-        isAuthorized[user][signature] = true;
-        emit Authorize(user, signature);
+    function authorize(address user, bytes4 selector) public onlyOwner {
+        isAuthorized[user][selector] = true;
+        emit Authorize(user, selector);
     }
 
     /**
      * @dev Deauthorizes an address from calling a specific function.
      * @param user The address to deauthorize.
-     * @param signature The function signature to deauthorize.
+     * @param selector The function selector to deauthorize.
      */
-    function deauthorize(address user, bytes4 signature) public onlyOwner {
-        isAuthorized[user][signature] = false;
-        emit DeAuthorize(user, signature);
+    function deauthorize(address user, bytes4 selector) public onlyOwner {
+        isAuthorized[user][selector] = false;
+        emit DeAuthorize(user, selector);
     }
 }
