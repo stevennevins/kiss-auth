@@ -49,12 +49,12 @@ contract Auth is Ownable {
     function getAuthoziation(address user, bytes4 selector) external view returns (bool) {
         return isAuthorized[user][selector];
     }
+
     /**
      * @dev Authorizes an address to call a specific function.
      * @param user The address to authorize.
      * @param selector The function selector to authorize.
      */
-
     function _authorize(address user, bytes4 selector) internal onlyOwner {
         isAuthorized[user][selector] = true;
         emit Authorize(user, selector);
